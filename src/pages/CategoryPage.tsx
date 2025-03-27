@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProductGrid from "@/components/product/ProductGrid";
 import { Button } from "@/components/ui/button";
@@ -108,18 +108,98 @@ const womenProducts = [
   },
 ];
 
+const menProducts = [
+  {
+    id: "m1",
+    name: "Classic Fit Suit",
+    price: 599,
+    images: [
+      "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80",
+      "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80"
+    ],
+    colors: ["#000000", "#1B1B1B"],
+    category: "Suits",
+    isNew: true,
+  },
+  // Add more men's products...
+];
+
+const accessoriesProducts = [
+  {
+    id: "a1",
+    name: "Leather Wallet",
+    price: 89,
+    images: [
+      "https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+      "https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80"
+    ],
+    colors: ["#8B4513", "#000000"],
+    category: "Accessories",
+    isNew: true,
+  },
+  // Add more accessories...
+];
+
 const CategoryPage = () => {
+  const { category, filter } = useParams();
   const [gridView, setGridView] = useState(true);
   const [priceRange, setPriceRange] = useState([0, 500]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   
+  // Get products based on category
+  const getProducts = () => {
+    switch (category) {
+      case "women":
+        return womenProducts;
+      case "men":
+        return menProducts;
+      case "accessories":
+        return accessoriesProducts;
+      default:
+        return [];
+    }
+  };
+
+  // Get category title and description
+  const getCategoryInfo = () => {
+    switch (category) {
+      case "women":
+        return {
+          title: "Women's Collection",
+          description: "Discover our handpicked selection of premium women's apparel, crafted with exceptional quality and timeless design.",
+          image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+        };
+      case "men":
+        return {
+          title: "Men's Collection",
+          description: "Explore our curated selection of men's fashion, featuring classic styles and contemporary designs.",
+          image: "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80"
+        };
+      case "accessories":
+        return {
+          title: "Accessories Collection",
+          description: "Complete your look with our selection of premium accessories, from leather goods to jewelry.",
+          image: "https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80"
+        };
+      default:
+        return {
+          title: "Collection",
+          description: "Browse our collection of premium fashion items.",
+          image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+        };
+    }
+  };
+
+  const products = getProducts();
+  const categoryInfo = getCategoryInfo();
+  
   const categories = [
-    { id: "all", name: "All Categories", count: 32 },
-    { id: "dresses", name: "Dresses", count: 8 },
-    { id: "tops", name: "Tops", count: 12 },
-    { id: "knitwear", name: "Knitwear", count: 5 },
-    { id: "bottoms", name: "Bottoms", count: 4 },
-    { id: "outerwear", name: "Outerwear", count: 3 },
+    { id: "all", name: "All Categories", count: products.length },
+    { id: "dresses", name: "Dresses", count: products.filter(p => p.category === "Dresses").length },
+    { id: "tops", name: "Tops", count: products.filter(p => p.category === "Tops").length },
+    { id: "knitwear", name: "Knitwear", count: products.filter(p => p.category === "Knitwear").length },
+    { id: "bottoms", name: "Bottoms", count: products.filter(p => p.category === "Bottoms").length },
+    { id: "outerwear", name: "Outerwear", count: products.filter(p => p.category === "Outerwear").length },
   ];
   
   const sizes = [
@@ -129,25 +209,31 @@ const CategoryPage = () => {
     { id: "l", label: "L" },
     { id: "xl", label: "XL" },
   ];
+
+  // Get breadcrumb items
+  const getBreadcrumbItems = () => {
+    const items = [
+      { label: "Home", href: "/" },
+      { label: category.charAt(0).toUpperCase() + category.slice(1), href: `/category/${category}` },
+    ];
+    if (filter) {
+      items.push({ label: filter.charAt(0).toUpperCase() + filter.slice(1), href: `/category/${category}/${filter}`, active: true });
+    }
+    return items;
+  };
   
   return (
     <Layout>
       {/* Category Header */}
       <CategoryHeader 
-        title="Women's Featured Collection"
-        description="Discover our handpicked selection of premium women's apparel, crafted with exceptional quality and timeless design."
-        image="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+        title={categoryInfo.title}
+        description={categoryInfo.description}
+        image={categoryInfo.image}
       />
       
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <CategoryBreadcrumb 
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Women", href: "/category/women" },
-            { label: "Featured", href: "/category/women/featured", active: true },
-          ]}
-        />
+        <CategoryBreadcrumb items={getBreadcrumbItems()} />
         
         {/* Filters and Sort */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 my-6">
@@ -302,7 +388,7 @@ const CategoryPage = () => {
         {/* Product Grid */}
         <div className="py-4">
           <ProductGrid
-            products={womenProducts}
+            products={products}
             columns={gridView ? 4 : 2}
           />
         </div>
