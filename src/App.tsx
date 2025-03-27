@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,10 +5,30 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
+import { ProductProvider } from "./contexts/ProductContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CategoryPage from "./pages/CategoryPage";
 import ProductPage from "./pages/ProductPage";
+import ProductsPage from "./pages/ProductsPage";
+import Products from "./pages/Products";
+import CartPage from "./pages/CartPage";
+import CartDebugPage from "./pages/CartDebugPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import AccountPage from "./pages/AccountPage";
+import OrdersPage from "./pages/OrdersPage";
+import BestsellersPage from "./pages/BestsellersPage";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import OrderSuccessPage from "./pages/OrderSuccessPage.tsx";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminProducts from "./pages/admin/Products";
+import ProductManager from "./pages/admin/ProductManager";
+import AdminSettingsPage from "./pages/AdminSettingsPage";
+import AdminAccess from "./AdminAccess";
 
 const queryClient = new QueryClient();
 
@@ -49,13 +68,43 @@ const App = () => {
         <Toaster />
         <Sonner position="top-right" closeButton />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/category/women/featured" element={<CategoryPage />} />
-            <Route path="/product/:productId" element={<ProductPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AuthProvider>
+            <CartProvider>
+              <ProductProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  {/* Category Routes */}
+                  <Route path="/category/:category" element={<CategoryPage />} />
+                  <Route path="/category/:category/:filter" element={<CategoryPage />} />
+                  <Route path="/product/:productId" element={<ProductPage />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/cart-debug" element={<CartDebugPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/account" element={<AccountPage />} />
+                  <Route path="/orders" element={<OrdersPage />} />
+                  <Route path="/orders/:orderId" element={<OrdersPage />} />
+                  <Route path="/bestsellers" element={<BestsellersPage />} />
+                  
+                  {/* Authentication Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/order-success" element={<OrderSuccessPage />} />
+                  
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/products" element={<AdminProducts />} />
+                  <Route path="/admin/product-manager" element={<ProductManager />} />
+                  <Route path="/admin/settings" element={<AdminSettingsPage />} />
+                  <Route path="/admin-access" element={<AdminAccess />} />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ProductProvider>
+            </CartProvider>
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
